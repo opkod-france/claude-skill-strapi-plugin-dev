@@ -1,4 +1,4 @@
-# Contributing to Strapi Expert Skill
+# Contributing to Strapi Plugin Dev Skill
 
 Thank you for your interest in contributing to the Strapi Expert skill for Claude Code!
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to the Strapi Expert skill for Claud
 
 1. **Fork the repository**
    ```bash
-   git clone https://github.com/ayhid/claude-skill-strapi-expert.git
-   cd claude-skill-strapi-expert
+   git clone https://github.com/opkod-france/claude-skill-strapi-plugin-dev.git
+   cd claude-skill-strapi-plugin-dev
    ```
 
 2. **Create a branch**

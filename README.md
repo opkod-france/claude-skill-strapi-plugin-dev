@@ -1,4 +1,4 @@
-# Strapi Expert - Claude Code Skill
+# Strapi Plugin Dev - Claude Code Skill
 
 A comprehensive Claude Code skill for Strapi v5 plugin development. This skill provides expert-level guidance for building production-grade Strapi plugins, custom APIs, and admin panel extensions.
 
@@ -16,22 +16,22 @@ A comprehensive Claude Code skill for Strapi v5 plugin development. This skill p
 
 ```bash
 # Clone to your Claude Code skills directory
-git clone https://github.com/ayhid/claude-skill-strapi-expert.git ~/.claude/skills/strapi-expert
+git clone https://github.com/opkod-france/claude-skill-strapi-plugin-dev.git ~/.claude/skills/strapi-plugin-dev
 ```
 
 ### Option 2: Manual Installation
 
 1. Create the skills directory if it doesn't exist:
    ```bash
-   mkdir -p ~/.claude/skills/strapi-expert
+   mkdir -p ~/.claude/skills/strapi-plugin-dev
    ```
 
 2. Download the skill files:
    ```bash
-   cd ~/.claude/skills/strapi-expert
-   curl -O https://raw.githubusercontent.com/ayhid/claude-skill-strapi-expert/main/SKILL.md
-   curl -O https://raw.githubusercontent.com/ayhid/claude-skill-strapi-expert/main/patterns.md
-   curl -O https://raw.githubusercontent.com/ayhid/claude-skill-strapi-expert/main/examples.md
+   cd ~/.claude/skills/strapi-plugin-dev
+   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/SKILL.md
+   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/patterns.md
+   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/examples.md
    ```
 
 ### Option 3: Project-Level Installation
@@ -39,8 +39,8 @@ git clone https://github.com/ayhid/claude-skill-strapi-expert.git ~/.claude/skil
 Add to your project's `.claude/skills/` directory:
 
 ```bash
-mkdir -p .claude/skills/strapi-expert
-# Copy SKILL.md, patterns.md, examples.md to .claude/skills/strapi-expert/
+mkdir -p .claude/skills/strapi-plugin-dev
+# Copy SKILL.md, patterns.md, examples.md to .claude/skills/strapi-plugin-dev/
 ```
 
 ## Usage
@@ -48,7 +48,7 @@ mkdir -p .claude/skills/strapi-expert
 Once installed, invoke the skill in Claude Code:
 
 ```
-/strapi-expert
+/strapi-plugin-dev
 ```
 
 Or Claude will automatically use it when working on Strapi v5 projects.
