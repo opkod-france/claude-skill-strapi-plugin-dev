@@ -1,126 +1,34 @@
 # Strapi Plugin Dev - Claude Code Skill
 
-[![GitHub release](https://img.shields.io/github/v/release/opkod-france/claude-skill-strapi-plugin-dev)](https://github.com/opkod-france/claude-skill-strapi-plugin-dev/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Strapi v5](https://img.shields.io/badge/Strapi-v5-2F2E8B)](https://strapi.io)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-D97706)](https://docs.anthropic.com/en/docs/claude-code)
+> **This repository has been archived.** This skill is now distributed via the [OPKOD Claude Code Plugins](https://github.com/opkod-france/opkod-claude-code-plugins) marketplace.
 
-A comprehensive Claude Code skill for Strapi v5 plugin development. This skill provides expert-level guidance for building production-grade Strapi plugins, custom APIs, and admin panel extensions.
-
-## Features
-
-- **Document Service API** - Complete guide to Strapi v5's new Document Service
-- **Plugin Architecture** - Best practices based on [strapi-community/plugin-todo](https://github.com/strapi-community/plugin-todo)
-- **Factory Patterns** - `createCoreService()`, `createCoreController()`, `createCoreRouter()`
-- **Admin Panel Integration** - Content Manager injection zones, React Query patterns
-- **Real-World Examples** - Complete plugin implementations with all components
-
-## Installation
-
-### Option 1: Clone to Claude Skills Directory
+## Install via Marketplace
 
 ```bash
-# Clone to your Claude Code skills directory
-git clone https://github.com/opkod-france/claude-skill-strapi-plugin-dev.git ~/.claude/skills/strapi-plugin-dev
+# 1. Add the marketplace (one-time)
+/plugin marketplace add opkod-france/opkod-claude-code-plugins
+
+# 2. Install
+/plugin install strapi-plugin-dev@opkod-marketplace
 ```
 
-### Option 2: Manual Installation
+## What's Included
 
-1. Create the skills directory if it doesn't exist:
-   ```bash
-   mkdir -p ~/.claude/skills/strapi-plugin-dev
-   ```
+A comprehensive Claude Code skill for Strapi v5 plugin development:
 
-2. Download the skill files:
-   ```bash
-   cd ~/.claude/skills/strapi-plugin-dev
-   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/SKILL.md
-   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/patterns.md
-   curl -O https://raw.githubusercontent.com/opkod-france/claude-skill-strapi-plugin-dev/main/examples.md
-   ```
+- **Document Service API** — Strapi v5's data layer (replaces Entity Service)
+- **Factory Patterns** — `createCoreService()`, `createCoreController()`, `createCoreRouter()`
+- **Admin Panel Integration** — Content Manager injection zones, React Query patterns
+- **React Hook Form + Zod** — Type-safe form validation
+- **TanStack Query v5** — Data fetching with `useFetchClient`
+- **Context7 Integration** — Live documentation verification against latest Strapi docs
+- **Real-World Examples** — Complete plugin implementations
 
-### Option 3: Project-Level Installation
+## Links
 
-Add to your project's `.claude/skills/` directory:
-
-```bash
-mkdir -p .claude/skills/strapi-plugin-dev
-# Copy SKILL.md, patterns.md, examples.md to .claude/skills/strapi-plugin-dev/
-```
-
-## Usage
-
-Once installed, invoke the skill in Claude Code:
-
-```
-/strapi-plugin-dev
-```
-
-Or Claude will automatically use it when working on Strapi v5 projects.
-
-## Skill Contents
-
-| File | Description |
-|------|-------------|
-| `SKILL.md` | Core skill definition with Document Service API, plugin structure, routes, controllers, services |
-| `patterns.md` | Advanced patterns: lifecycle hooks, queries, React Query, Content Manager integration |
-| `examples.md` | Complete plugin examples including the full plugin-todo implementation |
-
-## What You'll Learn
-
-### Server-Side
-- Document Service API (replacing Entity Service)
-- Factory-based services, controllers, and routers
-- Route organization (admin vs content-api)
-- Polymorphic relations with `morphToMany`
-- Hidden content types for internal plugin data
-
-### Admin Panel
-- Plugin registration and bootstrapping
-- Content Manager injection zones
-- React Query for data fetching
-- Strapi Design System components
-- Internationalization with `registerTrads()`
-
-## Example Topics
-
-Ask Claude Code questions like:
-
-- "How do I create a Strapi v5 plugin?"
-- "Show me how to use the Document Service API"
-- "How do I inject a component into the Content Manager?"
-- "Create a service with custom methods using factories"
-- "How do I set up polymorphic relations?"
-
-## Requirements
-
-- Claude Code CLI
-- Strapi v5.x project (for applying the knowledge)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Adding New Patterns
-
-1. Add patterns to `patterns.md`
-2. Add real-world examples to `examples.md`
-3. Update `SKILL.md` if adding new core concepts
+- **Marketplace repo**: [opkod-france/opkod-claude-code-plugins](https://github.com/opkod-france/opkod-claude-code-plugins)
+- **Companion skill**: [strapi-ui-design](https://github.com/opkod-france/claude-skill-strapi-ui-design) — Strapi Design System v2 patterns
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-- [strapi-community/plugin-todo](https://github.com/strapi-community/plugin-todo) - Reference implementation
-- [Strapi Documentation](https://docs.strapi.io/) - Official Strapi v5 docs
-- [Claude Code](https://claude.ai/code) - AI-powered coding assistant
-
-## Author
-
-Created by [Ayoub](https://github.com/ayhid)
-
----
-
-**Note**: This skill is not officially affiliated with Strapi or Anthropic. It's a community resource for Claude Code users working with Strapi.
+MIT
