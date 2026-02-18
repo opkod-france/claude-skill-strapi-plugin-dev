@@ -1,5 +1,10 @@
 # Strapi Plugin Dev - Claude Code Skill
 
+[![GitHub release](https://img.shields.io/github/v/release/opkod-france/claude-skill-strapi-plugin-dev)](https://github.com/opkod-france/claude-skill-strapi-plugin-dev/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Strapi v5](https://img.shields.io/badge/Strapi-v5-2F2E8B)](https://strapi.io)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-D97706)](https://docs.anthropic.com/en/docs/claude-code)
+
 A comprehensive Claude Code skill for Strapi v5 plugin development. This skill provides expert-level guidance for building production-grade Strapi plugins, custom APIs, and admin panel extensions.
 
 ## Features
