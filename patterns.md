@@ -900,3 +900,1118 @@ export const Initializer = ({ setPlugin }: Props) => {
   return null;
 };
 ```
+
+---
+
+## Strapi Design System v2 Patterns
+
+The Strapi Design System v2 (`@strapi/design-system` ^2.0.0) uses compound component patterns extensively. These patterns are based on real usage in production plugins like [pluginpal/strapi-webtools](https://github.com/pluginpal/strapi-webtools).
+
+### Page Layouts
+
+```tsx
+import { Layouts, Page } from '@strapi/strapi/admin';
+
+// Full page with sidebar navigation
+<Layouts.Root sideNav={<SubNav>...</SubNav>}>
+  <Routes>...</Routes>
+</Layouts.Root>
+
+// Page header with actions and back button
+<Layouts.Header
+  title="URL patterns"
+  subtitle="A list of all the known URL alias patterns."
+  primaryAction={
+    <Button onClick={handleCreate} startIcon={<Plus />}>
+      Add new pattern
+    </Button>
+  }
+  navigationAction={
+    <DsLink startIcon={<ArrowLeft />} tag={Link} to="/plugins/my-plugin">
+      Back
+    </DsLink>
+  }
+/>
+
+// Page content area
+<Layouts.Content>
+  {/* page body */}
+</Layouts.Content>
+
+// Page states
+<Page.Loading />
+<Page.Error />
+<Page.Protect permissions={pluginPermissions['settings.patterns']}>
+  {/* protected content */}
+</Page.Protect>
+```
+
+### Sub-Navigation (Sidebar)
+
+```tsx
+import {
+  SubNav, SubNavHeader, SubNavSections, SubNavSection, SubNavLink,
+} from '@strapi/design-system';
+import { Link } from 'react-router-dom';
+
+<SubNav>
+  <SubNavHeader value="" label="My Plugin" />
+  <SubNavSections>
+    <SubNavSection label="Settings">
+      <SubNavLink tag={Link} to="/plugins/my-plugin">
+        Overview
+      </SubNavLink>
+      <SubNavLink tag={Link} to="/plugins/my-plugin/patterns">
+        Patterns
+      </SubNavLink>
+    </SubNavSection>
+  </SubNavSections>
+</SubNav>
+```
+
+### Tables
+
+```tsx
+import {
+  Table, Tr, Thead, Th, Tbody, Td,
+  Typography, VisuallyHidden, EmptyStateLayout,
+  Flex, IconButton,
+} from '@strapi/design-system';
+import { Pencil, Trash } from '@strapi/icons';
+
+<Table colCount={3} rowCount={items.length + 1}>
+  <Thead>
+    <Tr>
+      <Th>
+        <Typography variant="sigma" textColor="neutral600">Name</Typography>
+      </Th>
+      <Th>
+        <VisuallyHidden>Actions</VisuallyHidden>
+      </Th>
+    </Tr>
+  </Thead>
+  <Tbody>
+    {items.map((item) => (
+      <Tr key={item.id}>
+        <Td><Typography>{item.name}</Typography></Td>
+        <Td>
+          <Flex justifyContent="end" gap={2}>
+            <IconButton onClick={() => handleEdit(item)} label="Edit">
+              <Pencil />
+            </IconButton>
+            <IconButton onClick={() => handleDelete(item)} label="Delete">
+              <Trash />
+            </IconButton>
+          </Flex>
+        </Td>
+      </Tr>
+    ))}
+  </Tbody>
+</Table>
+
+// Empty state
+<EmptyStateLayout
+  content="You don't have any items yet."
+  shadow="tableShadow"
+  hasRadius
+  action={<Button variant="secondary" onClick={handleCreate}>Create first item</Button>}
+/>
+```
+
+### Modal (Compound Component)
+
+```tsx
+import { Modal, Button, Typography } from '@strapi/design-system';
+
+<Modal.Root open={open} onOpenChange={setOpen}>
+  <Modal.Trigger>
+    <Button>Edit</Button>
+  </Modal.Trigger>
+  <Modal.Content>
+    <Modal.Header>
+      <Typography textColor="neutral800" variant="omega" fontWeight="bold">
+        Edit Item
+      </Typography>
+    </Modal.Header>
+    <Modal.Body>
+      {/* form content */}
+    </Modal.Body>
+    <Modal.Footer>
+      <Modal.Close>
+        <Button variant="tertiary">Cancel</Button>
+      </Modal.Close>
+      <Button loading={submitting} onClick={handleSubmit}>
+        Save
+      </Button>
+    </Modal.Footer>
+  </Modal.Content>
+</Modal.Root>
+```
+
+### Dialog (Confirm Actions)
+
+```tsx
+import { Dialog, Button, Typography } from '@strapi/design-system';
+import { WarningCircle } from '@strapi/icons';
+
+<Dialog.Root>
+  <Dialog.Trigger>{children}</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Header>Delete item</Dialog.Header>
+    <Dialog.Body icon={<WarningCircle />}>
+      <Typography>Are you sure you want to delete this item?</Typography>
+    </Dialog.Body>
+    <Dialog.Footer>
+      <Dialog.Cancel>
+        <Button variant="tertiary">Cancel</Button>
+      </Dialog.Cancel>
+      <Button variant="secondary" onClick={onDelete}>Delete</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
+```
+
+### Form Fields (Field Compound Component)
+
+```tsx
+import {
+  Field, TextInput, SingleSelect, SingleSelectOption, Checkbox,
+} from '@strapi/design-system';
+
+// Text field with error and hint
+<Field.Root error={errors.name?.message} hint="A unique identifier">
+  <Field.Label>Name</Field.Label>
+  <TextInput
+    name="name"
+    value={values.name}
+    onChange={(e) => setValue('name', e.target.value)}
+  />
+  <Field.Hint />
+  <Field.Error />
+</Field.Root>
+
+// Select field
+<Field.Root hint="Choose a content type" error={errors.contenttype?.message}>
+  <Field.Label>Content Type</Field.Label>
+  <SingleSelect
+    name="contenttype"
+    value={values.contenttype}
+    onChange={(v) => setValue('contenttype', v)}
+  >
+    {contentTypes.map((ct) => (
+      <SingleSelectOption key={ct.uid} value={ct.uid}>
+        {ct.name}
+      </SingleSelectOption>
+    ))}
+  </SingleSelect>
+  <Field.Hint />
+  <Field.Error />
+</Field.Root>
+
+// Checkbox with field hint
+<Field.Root hint="Uncheck this to create a custom alias below.">
+  <Checkbox
+    onCheckedChange={(value) => setValue('generated', value)}
+    checked={values.generated}
+  >
+    Generate automatic URL alias
+  </Checkbox>
+  <Field.Hint />
+</Field.Root>
+```
+
+### Radio Groups
+
+```tsx
+import { Radio, Flex } from '@strapi/design-system';
+
+<Radio.Group
+  onValueChange={(value) => setSelectedType(value)}
+  value={selectedType}
+  name="generation-type"
+>
+  <Flex direction="column" alignItems="start" gap="2">
+    <Radio.Item value="draft">Create as draft</Radio.Item>
+    <Radio.Item value="published">Publish immediately</Radio.Item>
+    <Radio.Item value="scheduled">Schedule for later</Radio.Item>
+  </Flex>
+</Radio.Group>
+```
+
+### Grid Layout
+
+```tsx
+import { Grid } from '@strapi/design-system';
+
+<Grid.Root gap={4} marginTop={4}>
+  <Grid.Item col={6} direction="column" alignItems="flex-start" gap="4">
+    {/* 6-column item */}
+  </Grid.Item>
+  <Grid.Item col={6} s={12} direction="column" alignItems="flex-start">
+    {/* responsive: 6 cols on desktop, 12 (full width) on small */}
+  </Grid.Item>
+</Grid.Root>
+```
+
+### Pagination
+
+```tsx
+import { Pagination } from '@strapi/strapi/admin';
+
+<Pagination.Root {...pagination}>
+  <Pagination.PageSize />
+  <Pagination.Links />
+</Pagination.Root>
+```
+
+### Filters and Search
+
+```tsx
+import { Filters as StrapiFilters, SearchInput } from '@strapi/strapi/admin';
+import { Flex } from '@strapi/design-system';
+
+const filters: StrapiFilters.Filter[] = [
+  {
+    input: FilterInput,
+    label: 'Content-Type',
+    name: 'contenttype',
+    options: contentTypes.map((ct) => ({ label: ct.name, value: ct.uid })),
+    type: 'string',
+  },
+];
+
+<Flex gap="2" marginBottom="4">
+  <SearchInput label="Search" placeholder="Search" />
+  <StrapiFilters.Root options={filters}>
+    <StrapiFilters.Trigger />
+    <StrapiFilters.Popover />
+    <StrapiFilters.List />
+  </StrapiFilters.Root>
+</Flex>
+```
+
+### Typography Variants
+
+| Variant | Use Case |
+|---------|----------|
+| `alpha` | Page title (h1) |
+| `beta` | Section heading (h2) |
+| `delta` | Sub-section heading |
+| `sigma` | Table headers, labels (`textColor="neutral600"`) |
+| `omega` | Body text, modal titles |
+| `pi` | Small descriptions (`textColor="neutral600"`) |
+
+### Strapi Admin Hooks
+
+```tsx
+import {
+  useFetchClient,           // { get, post, put, del } - API calls
+  getFetchClient,            // Same as useFetchClient but not a hook
+  useNotification,           // { toggleNotification } - toast notifications
+  useRBAC,                   // Role-based access control
+  unstable_useContentManagerContext, // Content Manager context
+  Page,                      // Page.Loading, Page.Error, Page.Protect
+  Layouts,                   // Layouts.Root, Layouts.Header, Layouts.Content
+  Pagination,                // Pagination.Root, Pagination.PageSize, Pagination.Links
+} from '@strapi/strapi/admin';
+```
+
+### RBAC Permissions
+
+```tsx
+import { useRBAC } from '@strapi/strapi/admin';
+
+// Define permissions
+const pluginPermissions = {
+  'settings.list': [{ action: 'plugin::my-plugin.settings.list', subject: null }],
+  'settings.patterns': [{ action: 'plugin::my-plugin.settings.patterns', subject: null }],
+  'edit-view.sidebar': [{ action: 'plugin::my-plugin.edit-view.sidebar', subject: null }],
+};
+
+// Use in components
+const {
+  allowedActions: { canList, canPatterns },
+} = useRBAC(pluginPermissions);
+
+if (!canList) return null;
+
+// Or protect entire pages
+<Page.Protect permissions={pluginPermissions['settings.patterns']}>
+  {/* protected content */}
+</Page.Protect>
+```
+
+### Notifications
+
+```tsx
+import { useNotification } from '@strapi/strapi/admin';
+import { useIntl } from 'react-intl';
+
+const { toggleNotification } = useNotification();
+const { formatMessage } = useIntl();
+
+// Success
+toggleNotification({
+  type: 'success',
+  message: formatMessage({ id: 'my-plugin.success.saved', defaultMessage: 'Saved successfully' }),
+});
+
+// Error
+toggleNotification({
+  type: 'danger',
+  message: formatMessage({ id: 'notification.error', defaultMessage: 'An error occurred' }),
+});
+```
+
+---
+
+## React Hook Form + Zod Patterns
+
+For modern Strapi v5 plugins, use React Hook Form with Zod for type-safe form validation. This replaces legacy patterns using Formik + Yup.
+
+### Dependencies
+
+```json
+{
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "react-hook-form": "^7.54.0",
+    "zod": "^3.24.0"
+  }
+}
+```
+
+### Basic Settings Form
+
+```tsx
+// admin/src/pages/SettingsPage.tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useFetchClient, useNotification, Layouts, Page } from '@strapi/strapi/admin';
+import {
+  Main, Box, Button, Flex, Field, TextInput, Checkbox,
+  Typography,
+} from '@strapi/design-system';
+import { Check } from '@strapi/icons';
+import { useIntl } from 'react-intl';
+
+const settingsSchema = z.object({
+  apiUrl: z.string().url('Must be a valid URL').min(1, 'Required'),
+  apiKey: z.string().min(1, 'API key is required'),
+  enabled: z.boolean(),
+  syncInterval: z.coerce.number().min(1).max(1440),
+});
+
+type SettingsFormValues = z.infer<typeof settingsSchema>;
+
+const SettingsPage = () => {
+  const { get, put } = useFetchClient();
+  const { toggleNotification } = useNotification();
+  const { formatMessage } = useIntl();
+  const queryClient = useQueryClient();
+
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['my-plugin', 'settings'],
+    queryFn: () => get('/my-plugin/settings').then((res) => res.data),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, isSubmitting },
+    reset,
+    watch,
+    setValue,
+  } = useForm<SettingsFormValues>({
+    resolver: zodResolver(settingsSchema),
+    values: settings, // Syncs form with fetched data
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: SettingsFormValues) =>
+      put('/my-plugin/settings', { data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'settings'] });
+      toggleNotification({
+        type: 'success',
+        message: formatMessage({ id: 'my-plugin.settings.saved' }),
+      });
+    },
+    onError: () => {
+      toggleNotification({
+        type: 'danger',
+        message: formatMessage({ id: 'notification.error' }),
+      });
+    },
+  });
+
+  if (isLoading) return <Page.Loading />;
+
+  return (
+    <Main>
+      <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
+        <Layouts.Header
+          title="Settings"
+          primaryAction={
+            <Button
+              type="submit"
+              startIcon={<Check />}
+              loading={isSubmitting}
+              disabled={!isDirty}
+            >
+              Save
+            </Button>
+          }
+        />
+        <Layouts.Content>
+          <Box background="neutral0" padding={6} shadow="filterShadow" hasRadius>
+            <Flex direction="column" gap={4}>
+              <Field.Root error={errors.apiUrl?.message}>
+                <Field.Label>API URL</Field.Label>
+                <TextInput {...register('apiUrl')} placeholder="https://api.example.com" />
+                <Field.Error />
+              </Field.Root>
+
+              <Field.Root error={errors.apiKey?.message}>
+                <Field.Label>API Key</Field.Label>
+                <TextInput {...register('apiKey')} type="password" />
+                <Field.Error />
+              </Field.Root>
+
+              <Field.Root error={errors.syncInterval?.message} hint="In minutes (1-1440)">
+                <Field.Label>Sync Interval</Field.Label>
+                <TextInput {...register('syncInterval')} type="number" />
+                <Field.Hint />
+                <Field.Error />
+              </Field.Root>
+
+              <Field.Root>
+                <Checkbox
+                  checked={watch('enabled')}
+                  onCheckedChange={(value) => setValue('enabled', !!value, { shouldDirty: true })}
+                >
+                  Enable sync
+                </Checkbox>
+              </Field.Root>
+            </Flex>
+          </Box>
+        </Layouts.Content>
+      </form>
+    </Main>
+  );
+};
+```
+
+### Create/Edit Form with Modal
+
+```tsx
+// admin/src/components/CreateItemModal.tsx
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useFetchClient, useNotification } from '@strapi/strapi/admin';
+import {
+  Modal, Button, Field, TextInput, SingleSelect, SingleSelectOption,
+} from '@strapi/design-system';
+
+const createItemSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(255),
+  slug: z.string()
+    .min(1, 'Slug is required')
+    .regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers, and hyphens'),
+  contentType: z.string().min(1, 'Content type is required'),
+});
+
+type CreateItemValues = z.infer<typeof createItemSchema>;
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  contentTypes: Array<{ uid: string; name: string }>;
+}
+
+export const CreateItemModal = ({ open, onClose, contentTypes }: Props) => {
+  const { post } = useFetchClient();
+  const { toggleNotification } = useNotification();
+  const queryClient = useQueryClient();
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<CreateItemValues>({
+    resolver: zodResolver(createItemSchema),
+    defaultValues: { name: '', slug: '', contentType: '' },
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: CreateItemValues) =>
+      post('/my-plugin/items', { data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'items'] });
+      toggleNotification({ type: 'success', message: 'Item created' });
+      reset();
+      onClose();
+    },
+  });
+
+  return (
+    <Modal.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <Modal.Content>
+        <Modal.Header>Create Item</Modal.Header>
+        <Modal.Body>
+          <form id="create-item-form" onSubmit={handleSubmit((data) => mutation.mutate(data))}>
+            <Field.Root error={errors.name?.message}>
+              <Field.Label>Name</Field.Label>
+              <TextInput {...register('name')} />
+              <Field.Error />
+            </Field.Root>
+
+            <Field.Root error={errors.slug?.message}>
+              <Field.Label>Slug</Field.Label>
+              <TextInput {...register('slug')} />
+              <Field.Error />
+            </Field.Root>
+
+            {/* Use Controller for non-native inputs like SingleSelect */}
+            <Controller
+              name="contentType"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Field.Root error={errors.contentType?.message}>
+                  <Field.Label>Content Type</Field.Label>
+                  <SingleSelect value={value} onChange={onChange}>
+                    {contentTypes.map((ct) => (
+                      <SingleSelectOption key={ct.uid} value={ct.uid}>
+                        {ct.name}
+                      </SingleSelectOption>
+                    ))}
+                  </SingleSelect>
+                  <Field.Error />
+                </Field.Root>
+              )}
+            />
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Modal.Close>
+            <Button variant="tertiary">Cancel</Button>
+          </Modal.Close>
+          <Button
+            type="submit"
+            form="create-item-form"
+            loading={isSubmitting}
+          >
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal.Root>
+  );
+};
+```
+
+### Reusable Zod Schemas
+
+```typescript
+// admin/src/utils/schemas.ts
+import { z } from 'zod';
+
+// Common field schemas
+export const slugSchema = z.string()
+  .min(1, 'Slug is required')
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Must be a valid slug (lowercase, hyphens only)');
+
+export const uidSchema = z.string()
+  .regex(/^(api|plugin)::\w[\w-]*\.\w[\w-]*$/, 'Must be a valid Strapi UID');
+
+// Pattern schema with async server-side validation
+export const patternSchema = z.object({
+  pattern: z.string().min(1, 'Pattern is required'),
+  contenttype: uidSchema,
+  languages: z.array(z.string()).optional(),
+});
+
+// Settings schema
+export const settingsSchema = z.object({
+  enabled: z.boolean().default(true),
+  webhookUrl: z.string().url().optional().or(z.literal('')),
+  maxRetries: z.coerce.number().int().min(0).max(10).default(3),
+});
+```
+
+### Custom Hook: usePluginForm
+
+```tsx
+// admin/src/hooks/usePluginForm.ts
+import { useForm, UseFormProps } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useFetchClient, useNotification } from '@strapi/strapi/admin';
+import { useIntl } from 'react-intl';
+import { z } from 'zod';
+
+interface UsePluginFormOptions<T extends z.ZodType> {
+  schema: T;
+  endpoint: string;
+  method?: 'post' | 'put';
+  queryKeyToInvalidate: string[];
+  successMessageId?: string;
+  formOptions?: Omit<UseFormProps<z.infer<T>>, 'resolver'>;
+}
+
+export function usePluginForm<T extends z.ZodType>({
+  schema,
+  endpoint,
+  method = 'post',
+  queryKeyToInvalidate,
+  successMessageId = 'notification.success',
+  formOptions,
+}: UsePluginFormOptions<T>) {
+  const { post, put } = useFetchClient();
+  const { toggleNotification } = useNotification();
+  const { formatMessage } = useIntl();
+  const queryClient = useQueryClient();
+
+  const form = useForm<z.infer<T>>({
+    resolver: zodResolver(schema),
+    ...formOptions,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: z.infer<T>) =>
+      method === 'post'
+        ? post(endpoint, { data })
+        : put(endpoint, { data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
+      toggleNotification({
+        type: 'success',
+        message: formatMessage({ id: successMessageId }),
+      });
+    },
+    onError: () => {
+      toggleNotification({
+        type: 'danger',
+        message: formatMessage({ id: 'notification.error' }),
+      });
+    },
+  });
+
+  return {
+    ...form,
+    mutation,
+    onSubmit: form.handleSubmit((data) => mutation.mutate(data)),
+  };
+}
+```
+
+---
+
+## TanStack Query v5 Patterns (Advanced)
+
+### Custom Query Hooks
+
+```tsx
+// admin/src/hooks/usePluginData.ts
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useFetchClient } from '@strapi/strapi/admin';
+
+const PLUGIN_PREFIX = '/my-plugin';
+
+export function useItems(params?: string) {
+  const { get } = useFetchClient();
+
+  return useQuery({
+    queryKey: ['my-plugin', 'items', params],
+    queryFn: () =>
+      get<{ data: Item[]; meta: PaginationMeta }>(
+        `${PLUGIN_PREFIX}/items${params ? `?${params}` : ''}`
+      ).then((res) => res.data),
+  });
+}
+
+export function useItem(documentId: string) {
+  const { get } = useFetchClient();
+
+  return useQuery({
+    queryKey: ['my-plugin', 'items', documentId],
+    queryFn: () =>
+      get<{ data: Item }>(`${PLUGIN_PREFIX}/items/${documentId}`)
+        .then((res) => res.data.data),
+    enabled: !!documentId,
+  });
+}
+
+export function useCreateItem() {
+  const { post } = useFetchClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateItemPayload) =>
+      post(`${PLUGIN_PREFIX}/items`, { data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'items'] });
+    },
+  });
+}
+
+export function useUpdateItem() {
+  const { put } = useFetchClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ documentId, data }: { documentId: string; data: Partial<Item> }) =>
+      put(`${PLUGIN_PREFIX}/items/${documentId}`, { data }),
+    onSuccess: (_, { documentId }) => {
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'items'] });
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'items', documentId] });
+    },
+  });
+}
+
+export function useDeleteItem() {
+  const { del } = useFetchClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      del(`${PLUGIN_PREFIX}/items/${documentId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-plugin', 'items'] });
+    },
+  });
+}
+```
+
+### Query Key Conventions
+
+| Key Pattern | Use Case |
+|-------------|----------|
+| `['my-plugin', 'items']` | List of items |
+| `['my-plugin', 'items', params]` | List with query params (pagination, filters) |
+| `['my-plugin', 'items', documentId]` | Single item by ID |
+| `['my-plugin', 'settings']` | Plugin settings |
+| `['my-plugin', 'content-types']` | Available content types |
+
+### Loading/Error State Pattern
+
+```tsx
+import { Page } from '@strapi/strapi/admin';
+
+const ItemsPage = () => {
+  const items = useItems();
+  const contentTypes = useContentTypes();
+
+  if (items.isLoading || contentTypes.isLoading) {
+    return <Page.Loading />;
+  }
+
+  if (items.isError || contentTypes.isError) {
+    return <Page.Error />;
+  }
+
+  return (
+    <Main>
+      {/* render content */}
+    </Main>
+  );
+};
+```
+
+### useFetchClient vs getFetchClient
+
+Strapi provides two ways to make authenticated API calls:
+
+```tsx
+// Hook version - use in React components
+import { useFetchClient } from '@strapi/strapi/admin';
+
+const MyComponent = () => {
+  const { get, post, put, del } = useFetchClient();
+  // Use in useQuery, useMutation, event handlers
+};
+
+// Utility function - use outside React (or in callbacks that don't need reactivity)
+import { getFetchClient } from '@strapi/strapi/admin';
+
+const { get, post, put, del } = getFetchClient();
+
+// Both return { data } where:
+// - Outer .data = axios response wrapper
+// - Inner .data = your API payload
+// Access pattern: response.data.data for the actual data
+```
+
+---
+
+## Content Type Builder Integration
+
+Extend the Content Type Builder to add plugin-specific options to content types.
+
+```tsx
+// admin/src/index.ts
+import * as yup from 'yup'; // CTB still requires yup for validators
+
+export default {
+  bootstrap(app: any) {
+    const ctbPlugin = app.getPlugin('content-type-builder');
+    if (ctbPlugin) {
+      const ctbFormsAPI = ctbPlugin.apis.forms;
+
+      // Register custom form component
+      ctbFormsAPI.components.add({
+        id: 'my-plugin.checkboxConfirmation',
+        component: CheckboxConfirmation,
+      });
+
+      // Extend content type form
+      ctbFormsAPI.extendContentType({
+        validator: () => ({
+          'my-plugin': yup.object().shape({
+            enabled: yup.bool().default(true),
+          }),
+        }),
+        form: {
+          advanced() {
+            return [{
+              name: 'pluginOptions.my-plugin.enabled',
+              description: {
+                id: 'my-plugin.ctb.enabled.description',
+                defaultMessage: 'Enable My Plugin for this content type',
+              },
+              type: 'my-plugin.checkboxConfirmation',
+              intlLabel: {
+                id: 'my-plugin.ctb.enabled.label',
+                defaultMessage: 'My Plugin',
+              },
+            }];
+          },
+        },
+      });
+    }
+  },
+};
+```
+
+---
+
+## Edit View Side Panel (addEditViewSidePanel)
+
+Register a custom panel in the Content Manager's edit view sidebar.
+
+```tsx
+// admin/src/index.ts
+import type { StrapiApp } from '@strapi/strapi/admin';
+import type { PanelComponent } from '@strapi/content-manager/strapi-admin';
+import { MyPanel } from './components/MyPanel';
+
+export default {
+  bootstrap(app: StrapiApp) {
+    // @ts-expect-error - API exists but types may lag
+    app.getPlugin('content-manager').apis.addEditViewSidePanel([MyPanel]);
+  },
+};
+
+// admin/src/components/MyPanel.tsx
+import { unstable_useContentManagerContext } from '@strapi/strapi/admin';
+import type { PanelComponent } from '@strapi/content-manager/strapi-admin';
+
+const MyPanel: PanelComponent = () => {
+  const { contentType, model, id } = unstable_useContentManagerContext();
+
+  // Check if the plugin is enabled for this content type
+  if (!contentType?.pluginOptions?.['my-plugin']?.enabled) return null;
+
+  // Panel must return { title, content } or null
+  return {
+    title: 'My Plugin',
+    content: (
+      <Box padding={4}>
+        <Typography>Panel content for {model}</Typography>
+      </Box>
+    ),
+  };
+};
+```
+
+---
+
+## Custom Injection Zones
+
+Create your own injection zones so other plugins or addons can extend your plugin's UI.
+
+```tsx
+// admin/src/index.ts
+export default {
+  register(app: any) {
+    app.registerPlugin({
+      id: PLUGIN_ID,
+      initializer: Initializer,
+      isReady: false,
+      name: PLUGIN_ID,
+      injectionZones: {
+        myPluginRouter: { route: [] },
+        myPluginSidePanel: { link: [] },
+      },
+    });
+  },
+};
+
+// admin/src/pages/App.tsx - Render injected routes
+import { useStrapiApp } from '@strapi/strapi/admin';
+import { PLUGIN_ID } from '../pluginId';
+
+const App = () => {
+  const getPlugin = useStrapiApp('App', (state) => state.getPlugin);
+  const plugin = getPlugin(PLUGIN_ID);
+  const injectedRoutes = plugin?.getInjectedComponents('myPluginRouter', 'route') || [];
+
+  return (
+    <Routes>
+      <Route index element={<HomePage />} />
+      {injectedRoutes.map(({ path, Component }) => (
+        <Route key={path} path={path} element={<Component />} />
+      ))}
+      <Route path="*" element={<Page.Error />} />
+    </Routes>
+  );
+};
+```
+
+---
+
+## Monorepo Plugin Development (PluginPal Boilerplate)
+
+Based on [pluginpal/strapi-plugin-boilerplate](https://github.com/pluginpal/strapi-plugin-boilerplate) - a test-driven template for Strapi v5 plugins.
+
+### Recommended Monorepo Structure
+
+```
+my-plugin/
+├── package.json              # Root: pnpm workspace + Turborepo
+├── pnpm-workspace.yaml
+├── turbo.json
+├── biome.json                # Linting (replaces ESLint + Prettier)
+├── cypress.config.js         # E2E tests
+├── packages/
+│   └── my-plugin/
+│       ├── package.json      # Plugin package with exports
+│       ├── admin/src/        # Admin panel
+│       └── server/src/       # Server-side
+│           └── tests/        # Jest + Supertest integration tests
+└── apps/
+    └── playground/           # Isolated Strapi instance for dev
+        ├── package.json      # Strapi 5.x + plugin workspace ref
+        ├── config/
+        └── tests/
+            └── helpers.ts    # Strapi test bootstrap helpers
+```
+
+### Test Setup (Jest + Supertest)
+
+```typescript
+// apps/playground/tests/helpers.ts
+const { createStrapi } = require('@strapi/strapi');
+
+let instance;
+
+async function setupStrapi() {
+  if (!instance) {
+    const app = await createStrapi({
+      appDir: '../../apps/playground',
+      distDir: '../../apps/playground/dist',
+    }).load();
+
+    instance = app;
+    await instance.server.mount();
+  }
+  return instance;
+}
+
+async function stopStrapi() {
+  if (instance) {
+    await instance.server.httpServer.close();
+    await instance.db.connection.destroy();
+    instance.destroy();
+  }
+}
+
+module.exports = { setupStrapi, stopStrapi };
+```
+
+```typescript
+// packages/my-plugin/server/tests/example.test.ts
+const request = require('supertest');
+const { setupStrapi, stopStrapi } = require('../../../apps/playground/tests/helpers');
+
+let strapi;
+
+beforeAll(async () => {
+  strapi = await setupStrapi();
+});
+
+afterAll(async () => {
+  await stopStrapi();
+});
+
+it('should return items from the API', async () => {
+  const response = await request(strapi.server.httpServer)
+    .get('/api/my-plugin/items')
+    .expect(200);
+
+  expect(response.body.data).toBeDefined();
+});
+
+it('should call the service correctly', async () => {
+  const result = strapi.service('plugin::my-plugin.item').findAll();
+  expect(result).toBeDefined();
+});
+```
+
+### Package.json with Modern Exports
+
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "strapi": {
+    "kind": "plugin",
+    "name": "my-plugin",
+    "displayName": "My Plugin"
+  },
+  "exports": {
+    "./strapi-admin": {
+      "source": "./admin/src/index.ts",
+      "import": "./dist/admin/index.mjs",
+      "require": "./dist/admin/index.js"
+    },
+    "./strapi-server": {
+      "source": "./server/src/index.ts",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js"
+    }
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@strapi/design-system": "^2.0.0-rc.14",
+    "@strapi/icons": "^2.0.0-rc.14",
+    "@tanstack/react-query": "^5.62.0",
+    "react-hook-form": "^7.54.0",
+    "react-intl": "^7.1.0",
+    "zod": "^3.24.0"
+  },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
+  }
+}
+```

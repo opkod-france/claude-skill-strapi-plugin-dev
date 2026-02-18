@@ -350,6 +350,11 @@ export default (policyContext, config, { strapi }) => {
 | No error handling in controllers | Wrap in try-catch, use ctx.throw |
 | Direct database queries | Use Document Service with filters |
 | Skipping policies | Always implement authorization |
+| Formik for forms | Use React Hook Form + Zod |
+| Yup for validation | Use Zod (type-safe, smaller bundle) |
+| `react-query` v3 | Use `@tanstack/react-query` v5 |
+| Manual `useState` for forms | Use `useForm()` from React Hook Form |
+| Own `QueryClientProvider` | Strapi admin provides one — only add for injected CM panels |
 
 ## Troubleshooting Guide
 
@@ -458,12 +463,20 @@ plugin-name/
     }
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.0.0"
+    "@hookform/resolvers": "^3.9.0",
+    "@strapi/design-system": "^2.0.0-rc.14",
+    "@strapi/icons": "^2.0.0-rc.14",
+    "@tanstack/react-query": "^5.62.0",
+    "react-hook-form": "^7.54.0",
+    "react-intl": "^7.1.0",
+    "zod": "^3.24.0"
   },
   "peerDependencies": {
     "@strapi/strapi": "^5.0.0",
-    "@strapi/design-system": "^2.0.0",
-    "react": "^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "styled-components": "^6.0.0"
   }
 }
 ```
@@ -731,11 +744,14 @@ export const TaskList = () => {
 - [ ] Hide internal content types from Content Manager UI
 
 **Admin Panel:**
-- [ ] Use `QueryClientProvider` for React Query context
-- [ ] Use `useFetchClient()` for API calls
+- [ ] Use `@tanstack/react-query` v5 for data fetching (`useQuery`, `useMutation`)
+- [ ] Use `react-hook-form` + `zod` for form handling and validation
+- [ ] Use `useFetchClient()` or `getFetchClient()` for API calls
 - [ ] Use `unstable_useContentManagerContext()` for current entity info
-- [ ] Use `app.getPlugin('content-manager').injectComponent()` for CM integration
+- [ ] Use `app.getPlugin('content-manager').injectComponent()` or `addEditViewSidePanel()` for CM integration
+- [ ] Use Strapi Design System v2 compound components (`Field.Root`, `Modal.Root`, `Dialog.Root`)
 - [ ] Support translations with `registerTrads()`
+- [ ] Use `useRBAC()` and `Page.Protect` for permissions
 
 **Content Types:**
 - [ ] Use `morphToMany` for polymorphic relations
